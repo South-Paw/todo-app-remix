@@ -4,9 +4,20 @@ import parseFrontMatter from 'front-matter';
 import invariant from 'tiny-invariant';
 import { marked } from 'marked';
 
-export interface Post {
+export interface PostSummary {
   slug: string;
   title: string;
+}
+
+export interface Post extends PostSummary {
+  markdown: string;
+  html: string;
+}
+
+export interface PostPayload {
+  slug: string;
+  title: string;
+  markdown: string;
 }
 
 export interface PostMarkdownAttributes {
@@ -20,7 +31,15 @@ function isValidPostAttributes(attributes: any): attributes is PostMarkdownAttri
 // relative to the server output not the source!
 const postsPath = path.join(__dirname, '..', 'posts');
 
-export async function getPosts() {
+export async function createPost(post: PostPayload): Promise<Post> {
+  const md = `---\ntitle: ${post.title}\n---\n\n${post.markdown}`;
+
+  await fs.writeFile(path.join(postsPath, post.slug + '.md'), md);
+
+  return getPost(post.slug);
+}
+
+export async function getPosts(): Promise<PostSummary[]> {
   const dir = await fs.readdir(postsPath);
 
   return Promise.all(
@@ -39,7 +58,7 @@ export async function getPosts() {
   );
 }
 
-export async function getPost(slug: string) {
+export async function getPost(slug: string): Promise<Post> {
   const filepath = path.join(postsPath, slug + '.md');
 
   const file = await fs.readFile(filepath);
@@ -52,7 +71,8 @@ export async function getPost(slug: string) {
 
   return {
     slug,
-    html,
     title: attributes.title,
+    markdown: body,
+    html,
   };
 }

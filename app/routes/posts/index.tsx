@@ -1,12 +1,12 @@
 import { Link, LoaderFunction, useLoaderData } from 'remix';
-import { getPosts, Post } from '~/post';
+import { getPosts, PostSummary } from '~/post';
 
-export const loader: LoaderFunction = (): Post[] => {
+export const loader: LoaderFunction = () => {
   return getPosts();
 };
 
 export default function Posts() {
-  const posts = useLoaderData<Post[]>();
+  const posts = useLoaderData<PostSummary[]>();
 
   return (
     <div>
