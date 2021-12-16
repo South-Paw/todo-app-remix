@@ -1,3 +1,4 @@
+import { ChakraProvider } from '@chakra-ui/react';
 import { CatchBoundaryComponent } from '@remix-run/react/routeModules';
 import {
   ErrorBoundaryComponent,
@@ -10,6 +11,8 @@ import {
   ScrollRestoration,
   useCatch,
 } from 'remix';
+import { Layout } from './components/Layout';
+import { Page } from './components/Page';
 
 const Document: React.FC<{ title?: string }> = ({ children, title }) => (
   <html lang="en">
@@ -31,7 +34,11 @@ const Document: React.FC<{ title?: string }> = ({ children, title }) => (
 
 const App: RouteComponent = () => (
   <Document>
-    <Outlet />
+    <ChakraProvider>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </ChakraProvider>
   </Document>
 );
 
@@ -40,14 +47,15 @@ const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 
   return (
     <Document title="Error!">
-      {/* <Layout> */}
-      <div>
-        <h1>There was an error</h1>
-        <p>{error.message}</p>
-        <hr />
-        <p>Hey, developer, you should replace this with what you want your users to see.</p>
-      </div>
-      {/* </Layout> */}
+      <ChakraProvider>
+        <Layout>
+          <Page title="There was an error">
+            <p>{error.message}</p>
+            <hr />
+            <p>Hey, developer, you should replace this with what you want your users to see.</p>
+          </Page>
+        </Layout>
+      </ChakraProvider>
     </Document>
   );
 };
@@ -70,12 +78,11 @@ const CatchBoundary: CatchBoundaryComponent = () => {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      {/* <Layout> */}
-      <h1>
-        {caught.status}: {caught.statusText}
-      </h1>
-      {message}
-      {/* </Layout> */}
+      <ChakraProvider>
+        <Layout>
+          <Page title={`${caught.status}: ${caught.statusText}`}>{message}</Page>
+        </Layout>
+      </ChakraProvider>
     </Document>
   );
 };

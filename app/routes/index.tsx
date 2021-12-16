@@ -1,29 +1,68 @@
-import type { Todo } from '@prisma/client';
-import { LoaderFunction, RouteComponent, useLoaderData } from 'remix';
+import { Button, Stack } from '@chakra-ui/react';
+import { Form, Link, LoaderFunction, RouteComponent, useLoaderData } from 'remix';
+import { Page } from '~/components/Page';
+import { Todo } from '~/components/Todo';
 import { db } from '~/utils/db.server';
 
 interface LoaderData {
-  todos: Array<Todo>;
+  showAll: boolean;
+  todos: Array<{
+    id: string;
+    label: string;
+    createdAt: string;
+    updatedAt: string;
+    completedAt?: string;
+  }>;
 }
 
-export const loader: LoaderFunction = async (): Promise<LoaderData> => {
+const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
+  const url = new URL(request.url);
+  const showAll = url.searchParams.get('showAll') === 'true';
+
+  const todos = await db.todo.findMany({
+    where: showAll ? {} : { completedAt: { equals: null } },
+    orderBy: { createdAt: 'asc' },
+  });
+
   return {
-    todos: await db.todo.findMany(),
+    showAll,
+    todos: todos.map(({ id, label, createdAt, updatedAt, completedAt }) => ({
+      id,
+      label,
+      createdAt: createdAt.toISOString(),
+      updatedAt: updatedAt.toISOString(),
+      completedAt: completedAt ? completedAt.toISOString() : undefined,
+    })),
   };
 };
 
 const Index: RouteComponent = () => {
-  const { todos } = useLoaderData<LoaderData>();
+  const { showAll, todos } = useLoaderData<LoaderData>();
 
   return (
-    <div>
-      {todos.map((todo) => (
-        <div key={todo.id}>
-          <pre>{JSON.stringify(todo, null, 2)}</pre>
-        </div>
-      ))}
-    </div>
+    <Page
+      title="All Todos"
+      action={
+        <Button as={Link} to={`/?showAll=${!showAll}`}>
+          {showAll ? 'Hide completed' : 'Show completed'}
+        </Button>
+      }
+    >
+      <Stack spacing={4}>
+        {todos.map((todo) => (
+          <Form method="post" action={`/todos/${todo.id}?showAll=${showAll}`}>
+            <Todo
+              key={todo.id}
+              label={todo.label}
+              createdAt={todo.createdAt}
+              completedAt={todo.completedAt ?? undefined}
+            />
+          </Form>
+        ))}
+      </Stack>
+    </Page>
   );
 };
 
 export default Index;
+export { loader };
