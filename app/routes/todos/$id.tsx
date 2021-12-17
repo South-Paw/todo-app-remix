@@ -1,5 +1,5 @@
 import { ActionFunction, redirect } from 'remix';
-import { db } from '~/utils/db.server';
+import { db } from '../../utils/db.server';
 
 const action: ActionFunction = async ({ request, params }) => {
   const url = new URL(request.url);

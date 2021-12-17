@@ -1,5 +1,5 @@
 import { json } from 'remix';
-import { db } from '~/utils/db.server';
+import { db } from '../../utils/db.server';
 
 export async function loader() {
   const todos = await db.todo.findMany();

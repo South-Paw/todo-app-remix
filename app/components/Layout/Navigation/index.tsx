@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, HStack, Image } from '@chakra-ui/react';
 import { Link } from 'remix';
-import { Container } from '~/components/Container';
+import { Container } from '../../Container';
 import { NavigationItem, NavigationItemProps } from './Item';
 
 const navigation: NavigationItemProps[] = [{ label: 'All', to: '/' }];

@@ -1,8 +1,9 @@
 import { Button, Stack } from '@chakra-ui/react';
-import { Form, Link, LoaderFunction, RouteComponent, useLoaderData } from 'remix';
-import { Page } from '~/components/Page';
-import { Todo } from '~/components/Todo';
-import { db } from '~/utils/db.server';
+import { DataFunctionArgs } from '@remix-run/server-runtime';
+import { Form, Link, RouteComponent, useLoaderData } from 'remix';
+import { Page } from '../components/Page';
+import { Todo } from '../components/Todo';
+import { db } from '../utils/db.server';
 
 interface LoaderData {
   showAll: boolean;
@@ -15,7 +16,7 @@ interface LoaderData {
   }>;
 }
 
-const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
+const loader = async ({ request }: DataFunctionArgs): Promise<LoaderData> => {
   const url = new URL(request.url);
   const showAll = url.searchParams.get('showAll') === 'true';
 
