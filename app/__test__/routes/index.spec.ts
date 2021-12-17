@@ -1,5 +1,14 @@
-import { prismaMock } from '../../utils/__test__/db.server';
-import { loader } from '../index';
+import { PrismaClient } from '@prisma/client';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { loader } from '../../routes/index';
+import { db } from '../../utils/db.server';
+
+jest.mock('../../utils/db.server', () => ({
+  __esModule: true,
+  db: mockDeep<PrismaClient>(),
+}));
+
+const prismaMock = db as unknown as DeepMockProxy<PrismaClient>;
 
 describe('routes/index', () => {
   const now = new Date();
