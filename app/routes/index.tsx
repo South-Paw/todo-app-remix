@@ -51,13 +51,8 @@ const Index: RouteComponent = () => {
     >
       <Stack spacing={4}>
         {todos.map((todo) => (
-          <Form method="post" action={`/todos/${todo.id}?showAll=${showAll}`}>
-            <Todo
-              key={todo.id}
-              label={todo.label}
-              createdAt={todo.createdAt}
-              completedAt={todo.completedAt ?? undefined}
-            />
+          <Form key={todo.id} method="post" action={`/todos/${todo.id}?showAll=${showAll}`}>
+            <Todo label={todo.label} createdAt={todo.createdAt} completedAt={todo.completedAt ?? undefined} />
           </Form>
         ))}
       </Stack>
