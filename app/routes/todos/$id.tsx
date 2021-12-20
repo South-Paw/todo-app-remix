@@ -6,7 +6,7 @@ const action: ActionFunction = async ({ request, params }) => {
   const showAll = url.searchParams.get('showAll');
 
   const formData = await request.formData();
-  const isComplete = formData.get('isComplete');
+  const isComplete = formData.get('isComplete') === 'true';
 
   await db.todo.update({
     data: { completedAt: isComplete ? new Date() : null },

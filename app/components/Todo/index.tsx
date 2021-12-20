@@ -18,7 +18,7 @@ export const Todo: React.FC<TodoProps> = ({ label, createdAt, completedAt }) => 
           size="lg"
           name="isComplete"
           defaultChecked={!!completedAt}
-          value={(!!completedAt).toString()}
+          value={(!completedAt).toString()}
           onChange={(e) => e.target.form?.submit()}
         />
       </Flex>
