@@ -14,6 +14,10 @@ const prismaMock = db as unknown as DeepMockProxy<PrismaClient>;
 describe('routes/todos/$id', () => {
   const now = new Date();
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
   describe('action', () => {
     it('should mark a todo as completed', async () => {
       prismaMock.todo.update.mockResolvedValue({
@@ -24,14 +28,14 @@ describe('routes/todos/$id', () => {
         completedAt: now,
       });
 
-      // form data not found in tests??
-      const formData = new FormData();
-      formData.set('isComplete', 'true');
+      const body = new URLSearchParams({
+        isComplete: 'true',
+      });
 
       const response = await action({
         request: new Request('http://localhost:3000/todos/2?showAll=false', {
           method: 'POST',
-          body: formData,
+          body,
         }),
         params: {
           id: '2',
@@ -41,7 +45,7 @@ describe('routes/todos/$id', () => {
 
       expect(response).toEqual(redirect('/?showAll=false'));
       expect(prismaMock.todo.update).toHaveBeenCalledWith({
-        data: { completedAt: null /* expect date */ },
+        data: { completedAt: new Date() },
         where: { id: '2' },
       });
     });
@@ -55,14 +59,14 @@ describe('routes/todos/$id', () => {
         completedAt: null,
       });
 
-      // form data not found in tests??
-      // const formData = new FormData();
-      // formData.set('isComplete', 'false');
+      const body = new URLSearchParams({
+        isComplete: 'false',
+      });
 
       const response = await action({
         request: new Request('http://localhost:3000/todos/2?showAll=true', {
           method: 'POST',
-          // body: formData,
+          body,
         }),
         params: {
           id: '2',
